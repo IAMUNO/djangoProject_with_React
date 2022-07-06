@@ -1,5 +1,12 @@
 import os
+from datetime import timedelta
 from os.path import abspath, join, dirname
+
+# python 3.9~3.10 몽키패칭
+import collections
+if not hasattr(collections, 'Callable'):
+    collections.Callable = collections.abc.Callable
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = dirname(dirname(dirname(abspath(__file__))))
@@ -28,10 +35,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # third apps
+    'corsheaders',
+    'django_pydenticon',
+    'rest_framework',
+    'rest_framework_simplejwt',
     # local apps
+    'accounts',
+    'instagram',
 ]
 
 MIDDLEWARE =[
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,6 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+AUTH_USER_MODEL = "accounts.User"
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -116,3 +132,29 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+     ),
+
+}
+
+SIMPLE_JWT = {
+    'SIGNING_KEY': SECRET_KEY,  # Fixme
+    'ALGORITHM': 'HS256',
+    'ROTATE_REFRESH_TOKENS': False,
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=28),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+
+}
+
+
+
+
+
+
